@@ -82,7 +82,12 @@ This project follows professional development standards:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is proprietary and licensed for educational and non-commercial use only. All rights reserved.
+
+**Permitted:** Educational learning, academic research, personal hobby projects  
+**Prohibited:** Commercial use, redistribution, derivative works for profit
+
+See the LICENSE file for full details. For commercial licensing, contact the copyright holder.
 
 ## Roadmap
 
