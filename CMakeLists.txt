@@ -8,6 +8,7 @@ add_executable(RogueEngine
     src/main.cpp
     src/player.cpp
     src/renderer.cpp
+    src/map.cpp
 )
 
 target_include_directories(RogueEngine PRIVATE include)
