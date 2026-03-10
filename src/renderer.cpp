@@ -1,4 +1,6 @@
 #include "renderer.h"
+#include "player.h"
+#include "enemy.h"
 #include <iostream>
 
 void renderHeader(float version, int width, int height)
@@ -53,7 +55,8 @@ void renderRoom(int roomNumber)
     std::cout << "\n";
 }
 
-void renderMap(const Room& room, int playerRow, int playerCol)
+void renderMap(const Room& room, const Player& player,
+               const Enemy enemies[], int enemyCount)
 {
     std::cout << "\n=== " << room.name << " ===\n";
 
@@ -62,23 +65,59 @@ void renderMap(const Room& room, int playerRow, int playerCol)
         for (int col = 0; col < MAP_WIDTH; ++col)
         {
             // Draw player position
-            if (row == playerRow && col == playerCol)
+            if (row == player.pos.row && col == player.pos.col)
             {
                 std::cout << "@ ";
                 continue;
             }
+            // Draw alive enemies
+            bool enemyDrawn = false;
+            for (int i = 0; i < enemyCount; ++i)
+            {
+                if (enemies[i].alive &&
+                    row == enemies[i].pos.row && col == enemies[i].pos.col)
+                {
+                    std::cout << enemies[i].symbol << " ";
+                    enemyDrawn = true;
+                    break;
+                }
+            }
+            if (enemyDrawn) continue;
 
+            //Draw Tiles
             switch (room.tiles[row][col])
             {
-                case static_cast<int>(TileType::Floor):  std::cout << ". "; break;
-                case static_cast<int>(TileType::Wall):   std::cout << "# "; break;
-                case static_cast<int>(TileType::Door):   std::cout << "D "; break;
-                case static_cast<int>(TileType::Chest):  std::cout << "C "; break;
-                case static_cast<int>(TileType::Stairs): std::cout << "S "; break;
-                default:                                  std::cout << "? "; break;
+                case static_cast<int>(TileType::Floor):
+                    std::cout << ". "; break;
+                case static_cast<int>(TileType::Wall):
+                    std::cout << "# "; break;
+                case static_cast<int>(TileType::Door):
+                    std::cout << "D "; break;
+                case static_cast<int>(TileType::Chest):
+                    std::cout << "C "; break;
+                case static_cast<int>(TileType::Stairs):
+                    std::cout << "S "; break;
+                default:
+                    std::cout << "? "; break;
             }
         }
         std::cout << "\n";
     }
     std::cout << "\n";
+}
+
+void renderEnemies(const Enemy enemies[], int enemyCount)
+{
+    std::cout << "--- Enemies ---\n";
+    bool anyAlive = false;
+    for (int i = 0; i < enemyCount; ++i)
+    {
+        if (enemies[i].alive)
+        {
+            printEnemy(enemies[i]);
+            anyAlive = true;
+        }
+    }
+    if (!anyAlive)
+        std::cout << "No enemies remain.\n";
 }

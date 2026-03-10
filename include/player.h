@@ -15,7 +15,7 @@ struct Player
     bool alive              = true;
     char symbol             = '@';
     int room                = 1;
-    Position position        = {3, 2}; //Default Starting Position
+    Position pos        = {3, 2}; //Default Starting Position
 };
 
 // Function declarations 

@@ -2,6 +2,7 @@
 #include "player.h"
 #include "renderer.h"
 #include "map.h"
+#include "enemy.h"
 
 enum class GameState { Running, PlayerDead, PlayerQuit };
 
@@ -9,24 +10,24 @@ int main()
 {
     constexpr int   WINDOW_WIDTH  = 80;
     constexpr int   WINDOW_HEIGHT = 24;
-    constexpr float VERSION       = 0.6f;
+    constexpr float VERSION       = 0.7f;
 
     // Initialize player
     Player player;
-    int playerRow = 3;
-    int playerCol = 2;
 
     // Initialize room
     Room currentRoom;
     initRoom(currentRoom, "Entrance Hall");
+    setTile(currentRoom, 1, 5, static_cast<int>(TileType::Chest));
+    setTile(currentRoom, 6, 6, static_cast<int>(TileType::Stairs));
+    setTile(currentRoom, 0, 6, static_cast<int>(TileType::Door));
 
-    // Place special tiles
-    setTile(currentRoom, 1, 5,
-            static_cast<int>(TileType::Chest));
-    setTile(currentRoom, 6, 6,
-            static_cast<int>(TileType::Stairs));
-    setTile(currentRoom, 0, 6,
-            static_cast<int>(TileType::Door));
+    // Initialize enemies
+    constexpr int MAX_ENEMIES = 3;
+    Enemy enemies[MAX_ENEMIES];
+    enemies[0] = createGoblin(2, 8);
+    enemies[1] = createSkeleton(5, 3);
+    enemies[2] = createTroll(4, 9);
 
     GameState gameState = GameState::Running;
 
@@ -35,11 +36,12 @@ int main()
     while (gameState == GameState::Running)
     {
         // Render
-        renderMap(currentRoom, playerRow, playerCol);
+        renderMap(currentRoom, player, enemies, MAX_ENEMIES);
         renderPlayer(player);
         renderStatusBar(player);
+        renderEnemies(enemies, MAX_ENEMIES);
 
-        std::cout << "Move: [W]orth [S]outh [A]est [D]ast"
+        std::cout << "\nMove: [W]North [S]South [A]West [D]East"
                   << "  [R]est  [Q]uit\n> ";
 
         // Input
@@ -47,17 +49,15 @@ int main()
         std::cin >> input;
         std::cout << "\n";
 
-        // Store previous position
-        int newRow = playerRow;
-        int newCol = playerCol;
+        // Calculate new position
+        Position newPos = player.pos;
 
-        // Update
         switch (input)
         {
-            case 'w': case 'W': --newRow; break;
-            case 's': case 'S': ++newRow; break;
-            case 'a': case 'A': --newCol; break;
-            case 'd': case 'D': ++newCol; break;
+            case 'w': case 'W': --newPos.row; break;
+            case 's': case 'S': ++newPos.row; break;
+            case 'a': case 'A': --newPos.col; break;
+            case 'd': case 'D': ++newPos.col; break;
             case 'r': case 'R':
                 heal(player, 20);
                 std::cout << "You rest. HP restored.\n\n";
@@ -70,28 +70,56 @@ int main()
                 break;
         }
 
-        // Only move if walkable
-        if (isWalkable(currentRoom, newRow, newCol))
+        // Check for enemy at new position — combat
+        bool combatOccurred = false;
+        for (int i = 0; i < MAX_ENEMIES; ++i)
         {
-            playerRow = newRow;
-            playerCol = newCol;
+            if (enemies[i].alive &&
+                enemies[i].pos.row == newPos.row &&
+                enemies[i].pos.col == newPos.col)
+            {
+                // Combat
+                std::cout << "You attack the " << enemies[i].name << "!\n";
+                damageEnemy(enemies[i], 25);
 
-            // Check tile events
-            int tile = getTile(currentRoom, playerRow, playerCol);
+                if (!isEnemyAlive(enemies[i]))
+                {
+                    std::cout << enemies[i].name
+                              << " has been defeated! +10 gold\n\n";
+                    player.gold += 10;
+                }
+                else
+                {
+                    takeDamage(player, enemies[i].attackDamage);
+                    std::cout << enemies[i].name << " retaliates for "
+                              << enemies[i].attackDamage << " damage!\n\n";
+                }
+                combatOccurred = true;
+                break;
+            }
+        }
+
+        // Move if no combat and tile is walkable
+        if (!combatOccurred && isWalkable(currentRoom, newPos.row, newPos.col))
+        {
+            player.pos = newPos;
+
+            // Tile events
+            int tile = getTile(currentRoom, player.pos.row, player.pos.col);
             if (tile == static_cast<int>(TileType::Chest))
             {
                 player.gold += 25;
                 std::cout << "You found a chest! +25 gold.\n\n";
-                setTile(currentRoom, playerRow, playerCol,
+                setTile(currentRoom, player.pos.row,
+                        player.pos.col,
                         static_cast<int>(TileType::Floor));
             }
             else if (tile == static_cast<int>(TileType::Stairs))
             {
-                std::cout << "You found the stairs! "
-                          << "Deeper dungeon coming soon...\n\n";
+                std::cout << "Stairs lead deeper...\n\n";
             }
         }
-        else
+        else if (!combatOccurred)
         {
             std::cout << "Blocked.\n\n";
         }
@@ -104,7 +132,8 @@ int main()
     switch (gameState)
     {
         case GameState::PlayerDead:
-            std::cout << "=== YOU DIED ===\n";
+            std::cout << "=== YOU DIED === Gold: "
+                      << player.gold << "\n";
             break;
         case GameState::PlayerQuit:
             std::cout << "=== QUIT === Gold: "

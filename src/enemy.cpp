@@ -1,56 +1,56 @@
 #include "enemy.h"
 #include <iostream>
 
-Enemy creatGoblin(int row, int col)
+Enemy createGoblin(int row, int col)
 {
     Enemy e;
-    e.name             = "Goblin";
-    e.health           = 40;
-    e.maxHealth        = 40;
-    e.attackDamage     = 6;
-    e.symbol           = 'g';
-    e.typ              = EnemyType::Goblin;
-    e.pos.row          = row;
-    e.pos.col          = col;
+    e.name         = "Goblin";
+    e.health       = 40;
+    e.maxHealth    = 40;
+    e.attackDamage = 6;
+    e.symbol       = 'g';
+    e.type         = EnemyType::Goblin;
+    e.pos.row      = row;
+    e.pos.col      = col;
     return e;
 }
 
-Enemy creatTroll(int row, int col)
+Enemy createTroll(int row, int col)
 {
     Enemy e;
-    e.name             = "Troll";
-    e.health           = 120;
-    e.maxHealth        = 120;
-    e.attackDamage     = 15;
-    e.symbol           = 'T';
-    e.typ              = EnemyType::Troll;
-    e.pos.row          = row;
-    e.pos.col          = col;
+    e.name         = "Troll";
+    e.health       = 120;
+    e.maxHealth    = 120;
+    e.attackDamage = 15;
+    e.symbol       = 'T';
+    e.type         = EnemyType::Troll;
+    e.pos.row      = row;
+    e.pos.col      = col;
     return e;
 }
 
-Enemy creatSkeleton(int row, int col)
+Enemy createSkeleton(int row, int col)
 {
     Enemy e;
-    e.name             = "Skeleton";
-    e.health           = 30;
-    e.maxHealth        = 30;
-    e.attackDamage     = 8;
-    e.symbol           = 's';
-    e.typ              = EnemyType::Skeleton;
-    e.pos.row          = row;
-    e.pos.col          = col;
+    e.name         = "Skeleton";
+    e.health       = 30;
+    e.maxHealth    = 30;
+    e.attackDamage = 8;
+    e.symbol       = 'S';
+    e.type         = EnemyType::Skeleton;
+    e.pos.row      = row;
+    e.pos.col      = col;
     return e;
 }
 
 void damageEnemy(Enemy& enemy, int amount)
 {
-    if(!enemy.alive) return;
+    if (!enemy.alive) return;
     enemy.health -= amount;
     if (enemy.health <= 0)
     {
         enemy.health = 0;
-        enemy.alive = false;
+        enemy.alive  = false;
     }
 }
 
@@ -61,8 +61,9 @@ bool isEnemyAlive(const Enemy& enemy)
 
 void printEnemy(const Enemy& enemy)
 {
-    std::cout << "[" << enemy.symbol << "] " << enemy.name 
-              << " HP: " << enemy.health << "/" << enemy.maxHealth
+    std::cout << "[" << enemy.symbol << "] "
+              << enemy.name
+              << " HP: "  << enemy.health << "/" << enemy.maxHealth
               << " ATK: " << enemy.attackDamage
               << (enemy.alive ? " (Alive)" : " (Dead)")
               << "\n";
