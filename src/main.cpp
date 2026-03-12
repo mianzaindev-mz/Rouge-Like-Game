@@ -10,7 +10,7 @@ int main()
 {
     constexpr int   WINDOW_WIDTH  = 80;
     constexpr int   WINDOW_HEIGHT = 24;
-    constexpr float VERSION       = 0.7f;
+    constexpr float VERSION       = 0.8f;
 
     // Initialize player
     Player player;
@@ -70,7 +70,7 @@ int main()
                 break;
         }
 
-        // Check for enemy at new position — combat
+        // Check for enemy at new position
         bool combatOccurred = false;
         for (int i = 0; i < MAX_ENEMIES; ++i)
         {
@@ -78,38 +78,42 @@ int main()
                 enemies[i].pos.row == newPos.row &&
                 enemies[i].pos.col == newPos.col)
             {
-                // Combat
-                std::cout << "You attack the " << enemies[i].name << "!\n";
-                damageEnemy(enemies[i], 25);
-
-                if (!isEnemyAlive(enemies[i]))
-                {
-                    std::cout << enemies[i].name
-                              << " has been defeated! +10 gold\n\n";
-                    player.gold += 10;
-                }
-                else
-                {
-                    takeDamage(player, enemies[i].attackDamage);
-                    std::cout << enemies[i].name << " retaliates for "
-                              << enemies[i].attackDamage << " damage!\n\n";
-                }
+                player.target = &enemies[i];    // point to the enemy
                 combatOccurred = true;
                 break;
             }
         }
 
-        // Move if no combat and tile is walkable
-        if (!combatOccurred && isWalkable(currentRoom, newPos.row, newPos.col))
+        // Resolve combat if target exists
+        if (hasTarget(player))
+        {
+            std::cout << "Attacking " << player.target->name << "!\n";
+            damageEnemy(*player.target, 25);
+
+            if (!isEnemyAlive(*player.target))
+            {
+                std::cout << player.target->name
+                          << " defeated! +10 gold\n\n";
+                player.gold   += 10;
+                player.target  = nullptr;
+            }
+            else
+            {
+                takeDamage(player, player.target->attackDamage);
+                std::cout << player.target->name << " retaliates for "
+                          << player.target->attackDamage << " damage!\n\n";
+            }
+        }
+        else if (!combatOccurred &&
+                 isWalkable(currentRoom, newPos.row, newPos.col))
         {
             player.pos = newPos;
 
-            // Tile events
             int tile = getTile(currentRoom, player.pos.row, player.pos.col);
             if (tile == static_cast<int>(TileType::Chest))
             {
                 player.gold += 25;
-                std::cout << "You found a chest! +25 gold.\n\n";
+                std::cout << "Chest opened! +25 gold.\n\n";
                 setTile(currentRoom, player.pos.row,
                         player.pos.col,
                         static_cast<int>(TileType::Floor));

@@ -9,14 +9,6 @@ void renderHeader(float version, int width, int height)
     std::cout << "World: " << width << "x" << height << "\n\n";
 }
 
-void renderPlayer(const Player&  player)
-{
-    std::cout << player.symbol
-                << " HP: " << player.health << "/" << player.maxHealth
-                << " Gold: " << player.gold
-                << " Room: " << player.room << "\n";
-}
-
 void renderStatusBar(const Player& player)
 {
     std::cout << "Status: ";
@@ -33,8 +25,8 @@ void renderStatusBar(const Player& player)
 
 void renderMenu()
 {
-    std::cout << "\n1) Move North  2) Move South  "
-              << "3) Rest (+20 HP)  4) Quit\n> ";
+    std::cout << "\nMove: [W]North [S]South [A]West [D]East"
+              << "  [R]est  [Q]uit\n> ";
 }
 
 void renderRoom(int roomNumber)
@@ -120,4 +112,18 @@ void renderEnemies(const Enemy enemies[], int enemyCount)
     }
     if (!anyAlive)
         std::cout << "No enemies remain.\n";
+}
+
+void renderPlayer(const Player& player)
+{
+    std::cout << player.symbol
+              << "  HP: "   << player.health << "/" << player.maxHealth
+              << "  Gold: " << player.gold
+              << "  Room: " << player.room;
+
+    if (hasTarget(player))
+        std::cout << "  TARGET: " << player.target->name
+                  << " HP:" << player.target->health;
+
+    std::cout << "\n";
 }
