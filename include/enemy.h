@@ -38,4 +38,5 @@ void   damageEnemy(Enemy& enemy, int amount);
 bool   isEnemyAlive(const Enemy& enemy);
 void   printEnemy(const Enemy& enemy);
 bool   isAdjacent(const Position& a, const Position& b);
+int&   getHealth(Enemy& enemy);
 
