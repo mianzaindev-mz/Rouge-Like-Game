@@ -77,3 +77,8 @@ bool isAdjacent(const Position& a, const Position& b)
     if (colDiff < 0) colDiff = -colDiff;
     return (rowDiff <= 1 && colDiff <= 1) && !(rowDiff == 0 && colDiff == 0);
 }
+
+int& getHealth(Enemy& enemy)
+{
+    return enemy.health;
+}
