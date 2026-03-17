@@ -36,3 +36,8 @@ bool hasTarget(const Player& player)
 {
     return player.target != nullptr && player.target->alive;
 }
+
+void clearTarget(Player& player)
+{
+    player.target = nullptr;
+}
