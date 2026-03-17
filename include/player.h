@@ -22,3 +22,4 @@ bool         isAlive(const Player& player);
 void         takeDamage(Player& player, int amount);
 void         heal(Player& player, int amount);
 bool         hasTarget(const Player& player);
+void         clearTarget(Player& player);
