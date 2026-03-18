@@ -3,6 +3,7 @@
 
 constexpr int MAP_WIDTH  = 12;
 constexpr int MAP_HEIGHT = 8;
+constexpr int UNEXPLORED = 5;
 
 // Tile type identifiers
 enum class TileType
@@ -28,3 +29,4 @@ void        initRoom(Room& room, const std::string& name);
 void        setTile(Room& room, int row, int col, int tileType);
 int         getTile(const Room& room, int row, int col);
 bool        isWalkable(const Room& room, int row, int col);
+void        floodReveal(Room& room, int row, int col);

@@ -89,8 +89,10 @@ void renderMap(const Room& room, const Player& player,
                     std::cout << "C "; break;
                 case static_cast<int>(TileType::Stairs):
                     std::cout << "S "; break;
-                default:
+                case UNEXPLORED:
                     std::cout << "? "; break;
+                default:
+                    std::cout << "  "; break;       
             }
         }
         std::cout << "\n";

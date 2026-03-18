@@ -10,7 +10,7 @@ int main()
 {
     constexpr int   WINDOW_WIDTH  = 80;
     constexpr int   WINDOW_HEIGHT = 24;
-    constexpr float VERSION       = 0.8f;
+    constexpr float VERSION       = 0.10f;
 
     // Initialize player
     Player player;
@@ -18,6 +18,7 @@ int main()
     // Initialize room
     Room currentRoom;
     initRoom(currentRoom, "Entrance Hall");
+    floodReveal(currentRoom, player.pos.row, player.pos.col);
     setTile(currentRoom, 1, 5, static_cast<int>(TileType::Chest));
     setTile(currentRoom, 6, 6, static_cast<int>(TileType::Stairs));
     setTile(currentRoom, 0, 6, static_cast<int>(TileType::Door));
@@ -90,7 +91,7 @@ int main()
                 std::cout << "Attacking " << player.target->name << "!\n";
 
                 // Direct reference manipulation of enemy health
-                getHealth(*player.target) -= 25;
+                damageEnemy(*player.target, 25);
 
                 if (!isEnemyAlive(*player.target))
             {
