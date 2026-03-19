@@ -3,6 +3,7 @@
 #include "renderer.h"
 #include "map.h"
 #include "enemy.h"
+#include "saveload.h"
 
 enum class GameState { Running, PlayerDead, PlayerQuit };
 
@@ -10,7 +11,7 @@ int main()
 {
     constexpr int   WINDOW_WIDTH  = 80;
     constexpr int   WINDOW_HEIGHT = 24;
-    constexpr float VERSION       = 0.10f;
+    constexpr float VERSION       = 0.11f;
 
     // Initialize player
     Player player;
@@ -18,10 +19,23 @@ int main()
     // Initialize room
     Room currentRoom;
     initRoom(currentRoom, "Entrance Hall");
-    floodReveal(currentRoom, player.pos.row, player.pos.col);
     setTile(currentRoom, 1, 5, static_cast<int>(TileType::Chest));
     setTile(currentRoom, 6, 6, static_cast<int>(TileType::Stairs));
     setTile(currentRoom, 0, 6, static_cast<int>(TileType::Door));
+
+    // Load save if exists
+    if (saveExists())
+    {
+        std::cout << "Save file found. Load game? [Y/N]: ";
+        char choice;
+        std::cin >> choice;
+        std::cout << "\n";
+        if (choice == 'y' || choice == 'Y')
+            loadGame(player, currentRoom.number);
+    }
+
+    // Flood reveal from player starting position
+    floodReveal(currentRoom, player.pos.row, player.pos.col);
 
     // Initialize enemies
     constexpr int MAX_ENEMIES = 3;
@@ -61,9 +75,11 @@ int main()
             case 'd': case 'D': ++newPos.col; break;
             case 'r': case 'R':
                 heal(player, 20);
+                saveGame(player, currentRoom.number);
                 std::cout << "You rest. HP restored.\n\n";
                 break;
             case 'q': case 'Q':
+                saveGame(player, currentRoom.number);
                 gameState = GameState::PlayerQuit;
                 break;
             default:
@@ -79,7 +95,7 @@ int main()
                 enemies[i].pos.row == newPos.row &&
                 enemies[i].pos.col == newPos.col)
             {
-                player.target = &enemies[i];    // point to the enemy
+                player.target = &enemies[i];
                 combatOccurred = true;
                 break;
             }
@@ -88,24 +104,23 @@ int main()
         // Resolve combat if target exists
         if (hasTarget(player))
         {
-                std::cout << "Attacking " << player.target->name << "!\n";
+            std::cout << "Attacking " << player.target->name << "!\n";
+            damageEnemy(*player.target, 25);
 
-                // Direct reference manipulation of enemy health
-                damageEnemy(*player.target, 25);
-
-                if (!isEnemyAlive(*player.target))
+            if (!isEnemyAlive(*player.target))
             {
-                std::cout << player.target->name << " defeated! +10 gold\n\n";
+                std::cout << player.target->name
+                          << " defeated! +10 gold\n\n";
                 player.gold += 10;
-                clearTarget(player);            // ← uses reference internally
+                clearTarget(player);
             }
             else
             {
                 takeDamage(player, player.target->attackDamage);
                 std::cout << player.target->name << " retaliates for "
-                  << player.target->attackDamage << " damage!\n\n";
+                          << player.target->attackDamage << " damage!\n\n";
             }
-        }   
+        }
         else if (!combatOccurred &&
                  isWalkable(currentRoom, newPos.row, newPos.col))
         {

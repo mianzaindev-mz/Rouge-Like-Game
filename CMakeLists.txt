@@ -10,6 +10,7 @@ add_executable(RogueEngine
     src/renderer.cpp
     src/map.cpp
     src/enemy.cpp
+    src/saveload.cpp
 )
 
 target_include_directories(RogueEngine PRIVATE include)

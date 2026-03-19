@@ -22,6 +22,7 @@ struct Room
     std::string name;
     bool        visited;
     int         enemyCount;
+    int         number;
 };
 
 // Functions
