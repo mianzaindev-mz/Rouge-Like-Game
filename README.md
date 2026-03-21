@@ -96,3 +96,4 @@ See the LICENSE file for full details. For commercial licensing, contact the cop
 - **v1.0**: Complete game with all core features
 - **v1.5**: Multiplayer support
 - **v2.0**: Advanced features and modding support
+- **vx.x**: More Features and Updates coming soon
