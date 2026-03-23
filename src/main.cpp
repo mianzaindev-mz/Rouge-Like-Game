@@ -11,7 +11,7 @@ int main()
 {
     constexpr int   WINDOW_WIDTH  = 80;
     constexpr int   WINDOW_HEIGHT = 24;
-    constexpr float VERSION       = 0.11f;
+    constexpr float VERSION       = 0.12f;
 
     // Initialize player
     Player player;
