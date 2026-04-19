@@ -10,9 +10,9 @@ enum class GameState { Running, PlayerDead, PlayerQuit };
 
 int main()
 {
-    constexpr int   WINDOW_WIDTH  = 80;
+    constexpr int   WINDOW_WIDTH = 80;
     constexpr int   WINDOW_HEIGHT = 24;
-    constexpr float VERSION       = 0.12f;
+    constexpr float VERSION = 0.13f;
 
     // Initialize player
     Player player;
@@ -36,7 +36,7 @@ int main()
     }
 
     // Flood reveal from player starting position
-    floodReveal(currentRoom, player.pos.row, player.pos.col);
+    floodReveal(currentRoom, player.getRow(), player.getCol());
 
     // Initialize enemies
     constexpr int MAX_ENEMIES = 3;
@@ -58,7 +58,7 @@ int main()
         renderEnemies(enemies, MAX_ENEMIES);
 
         std::cout << "\nMove: [W]North [S]South [A]West [D]East"
-                  << "  [R]est  [Q]uit\n> ";
+            << "  [R]est  [Q]uit\n> ";
 
         // Input
         char input = ' ';
@@ -66,26 +66,26 @@ int main()
         std::cout << "\n";
 
         // Calculate new position
-        Position newPos = player.pos;
+        Position newPos = { player.getRow(), player.getCol() };
 
         switch (input)
         {
-            case 'w': case 'W': --newPos.row; break;
-            case 's': case 'S': ++newPos.row; break;
-            case 'a': case 'A': --newPos.col; break;
-            case 'd': case 'D': ++newPos.col; break;
-            case 'r': case 'R':
-                heal(player, 20);
-                saveGame(player, currentRoom.number);
-                std::cout << "You rest. HP restored.\n\n";
-                break;
-            case 'q': case 'Q':
-                saveGame(player, currentRoom.number);
-                gameState = GameState::PlayerQuit;
-                break;
-            default:
-                std::cout << "Unknown command.\n\n";
-                break;
+        case 'w': case 'W': --newPos.row; break;
+        case 's': case 'S': ++newPos.row; break;
+        case 'a': case 'A': --newPos.col; break;
+        case 'd': case 'D': ++newPos.col; break;
+        case 'r': case 'R':
+            player.heal(20);
+            saveGame(player, player.getRoom());
+            std::cout << "You rest. HP restored.\n\n";
+            break;
+        case 'q': case 'Q':
+            saveGame(player, player.getRoom());
+            gameState = GameState::PlayerQuit;
+            break;
+        default:
+            std::cout << "Unknown command.\n\n";
+            break;
         }
 
         // Combat and movement
@@ -95,16 +95,16 @@ int main()
         if (!combatOccurred &&
             isWalkable(currentRoom, newPos.row, newPos.col))
         {
-            player.pos = newPos;
+            player.moveTo(newPos.row, newPos.col);
 
-            int tile = getTile(currentRoom, player.pos.row, player.pos.col);
+            int tile = getTile(currentRoom, player.getRow(), player.getCol());
             if (tile == static_cast<int>(TileType::Chest))
             {
-                player.gold += 25;
+                player.addGold(25);
                 std::cout << "Chest opened! +25 gold.\n\n";
-                setTile(currentRoom, player.pos.row,
-                        player.pos.col,
-                        static_cast<int>(TileType::Floor));
+                setTile(currentRoom, player.getRow(),
+                    player.getCol(),
+                    static_cast<int>(TileType::Floor));
             }
             else if (tile == static_cast<int>(TileType::Stairs))
             {
@@ -116,23 +116,23 @@ int main()
             std::cout << "Blocked.\n\n";
         }
 
-        if (!isAlive(player))
+        if (!player.isAlive())
             gameState = GameState::PlayerDead;
     }
 
     // End screen
     switch (gameState)
     {
-        case GameState::PlayerDead:
-            std::cout << "=== YOU DIED === Gold: "
-                      << player.gold << "\n";
-            break;
-        case GameState::PlayerQuit:
-            std::cout << "=== QUIT === Gold: "
-                      << player.gold << "\n";
-            break;
-        default:
-            break;
+    case GameState::PlayerDead:
+        std::cout << "=== YOU DIED === Gold: "
+            << player.getGold() << "\n";
+        break;
+    case GameState::PlayerQuit:
+        std::cout << "=== QUIT === Gold: "
+            << player.getGold() << "\n";
+        break;
+    default:
+        break;
     }
 
     return 0;

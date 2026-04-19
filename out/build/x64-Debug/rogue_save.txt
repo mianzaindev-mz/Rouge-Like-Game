@@ -1,0 +1,6 @@
+health=94
+maxHealth=100
+gold=35
+room=1
+posRow=4
+posCol=4

@@ -1,25 +1,45 @@
 #pragma once
-#include "enemy.h"
 #include <string>
 
 enum class PlayerStatus { Healthy, Hurt, Wounded, Critical, Dead };
 
-struct Player
-{
-    int     health    = 100;
-    int     maxHealth = 100;
-    int     gold      = 0;
-    float   speed     = 1.0f;
-    bool    alive     = true;
-    char    symbol    = '@';
-    int     room      = 1;
-    Position pos      = {3, 2};
-    Enemy*  target    = nullptr;    // ← pointer to current combat target
-};
+struct Enemy;    // forward declaration — avoid circular include
 
-PlayerStatus getStatus(const Player& player);
-bool         isAlive(const Player& player);
-void         takeDamage(Player& player, int amount);
-void         heal(Player& player, int amount);
-bool         hasTarget(const Player& player);
-void         clearTarget(Player& player);
+class Player
+{
+public:
+    Player();
+
+    // Getters
+    int          getHealth()    const;
+    int          getMaxHealth() const;
+    int          getGold()      const;
+    int          getRow()       const;
+    int          getCol()       const;
+    int          getRoom()      const;
+    char         getSymbol()    const;
+    bool         isAlive()      const;
+    bool         hasTarget()    const;
+    PlayerStatus getStatus()    const;
+    Enemy* getTarget()    const;
+
+    // Actions
+    void takeDamage(int amount);
+    void heal(int amount);
+    void addGold(int amount);
+    void moveTo(int row, int col);
+    void setRoom(int roomNumber);
+    void setTarget(Enemy* enemy);
+    void clearTarget();
+
+private:
+    int    health;
+    int    maxHealth;
+    int    gold;
+    int    row;
+    int    col;
+    int    room;
+    char   symbol;
+    bool   alive;
+    Enemy* target;
+};

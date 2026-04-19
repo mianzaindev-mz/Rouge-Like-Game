@@ -1,43 +1,79 @@
 #include "player.h"
-#include <iostream>
+#include "enemy.h"
 
-PlayerStatus getStatus(const Player& player)
+Player::Player()
+    : health(100), maxHealth(100), gold(0),
+    row(3), col(2), room(1), symbol('@'),
+    alive(true), target(nullptr)
 {
-    if      (player.health <= 0)  return PlayerStatus::Dead;
-    else if (player.health <= 25) return PlayerStatus::Critical;
-    else if (player.health <= 50) return PlayerStatus::Wounded;
-    else if (player.health <= 75) return PlayerStatus::Hurt;
-    else                         return PlayerStatus::Healthy;
 }
 
-bool isAlive(const Player& player)
+int    Player::getHealth()    const { return health; }
+int    Player::getMaxHealth() const { return maxHealth; }
+int    Player::getGold()      const { return gold; }
+int    Player::getRow()       const { return row; }
+int    Player::getCol()       const { return col; }
+int    Player::getRoom()      const { return room; }
+char   Player::getSymbol()    const { return symbol; }
+bool   Player::isAlive()      const { return alive; }
+Enemy* Player::getTarget()    const { return target; }
+
+bool Player::hasTarget() const
 {
-    return player.health > 0;
+    return target != nullptr && target->alive;
 }
 
-void takeDamage(Player& player, int amount)
+PlayerStatus Player::getStatus() const
 {
-    player.health -= amount;
-    if (player.health < 0)
-        player.health = 0;
-
-        if (player.health == 0)
-            player.alive = false;
+    if (health <= 0)                     return PlayerStatus::Dead;
+    if (health <= maxHealth * 0.25f)     return PlayerStatus::Critical;
+    if (health <= maxHealth * 0.50f)     return PlayerStatus::Wounded;
+    if (health <= maxHealth * 0.75f)     return PlayerStatus::Hurt;
+    return PlayerStatus::Healthy;
 }
 
-void heal(Player& player, int amount)
+void Player::takeDamage(int amount)
 {
-    player.health += amount;
-    if (player.health > player.maxHealth)
-        player.health = player.maxHealth;
+    if (!alive || amount <= 0) return;
+    health -= amount;
+    if (health <= 0)
+    {
+        health = 0;
+        alive = false;
+    }
 }
 
-bool hasTarget(const Player& player)
+void Player::heal(int amount)
 {
-    return player.target != nullptr && player.target->alive;
+    if (!alive || amount <= 0) return;
+    health += amount;
+    if (health > maxHealth)
+        health = maxHealth;
 }
 
-void clearTarget(Player& player)
+void Player::addGold(int amount)
 {
-    player.target = nullptr;
+    if (amount > 0)
+        gold += amount;
+}
+
+void Player::moveTo(int newRow, int newCol)
+{
+    row = newRow;
+    col = newCol;
+}
+
+void Player::setRoom(int roomNumber)
+{
+    room = roomNumber;
+}
+
+void Player::setTarget(Enemy* enemy)
+{
+    target = enemy;
+}
+
+void Player::clearTarget()
+{
+    target = nullptr;
 }
