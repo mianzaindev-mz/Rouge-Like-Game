@@ -30,10 +30,10 @@ bool loadGame(Player& player, int& roomNumber)
     if (!file.is_open()) return false;
 
     std::string line;
-    int  loadHealth = player.getHealth();
-    int  loadGold = 0;
-    int  loadRow = player.getRow();
-    int  loadCol = player.getCol();
+    int loadHealth = player.getHealth();
+    int loadGold = 0;
+    int loadRow = player.getRow();
+    int loadCol = player.getCol();
 
     while (std::getline(file, line))
     {
@@ -50,7 +50,6 @@ bool loadGame(Player& player, int& roomNumber)
         else if (key == "posCol")  loadCol = std::stoi(value);
     }
 
-    // Apply loaded values through class interface
     int damage = player.getHealth() - loadHealth;
     if (damage > 0) player.takeDamage(damage);
     player.addGold(loadGold);

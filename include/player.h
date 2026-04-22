@@ -3,7 +3,7 @@
 
 enum class PlayerStatus { Healthy, Hurt, Wounded, Critical, Dead };
 
-struct Enemy;    // forward declaration — avoid circular include
+struct Enemy;    // forward declaration
 
 class Player
 {

@@ -14,17 +14,14 @@ int main()
     constexpr int   WINDOW_HEIGHT = 24;
     constexpr float VERSION = 0.13f;
 
-    // Initialize player
     Player player;
 
-    // Initialize room
     Room currentRoom;
     initRoom(currentRoom, "Entrance Hall");
     setTile(currentRoom, 1, 5, static_cast<int>(TileType::Chest));
     setTile(currentRoom, 6, 6, static_cast<int>(TileType::Stairs));
     setTile(currentRoom, 0, 6, static_cast<int>(TileType::Door));
 
-    // Load save if exists
     if (saveExists())
     {
         std::cout << "Save file found. Load game? [Y/N]: ";
@@ -35,10 +32,8 @@ int main()
             loadGame(player, currentRoom.number);
     }
 
-    // Flood reveal from player starting position
     floodReveal(currentRoom, player.getRow(), player.getCol());
 
-    // Initialize enemies
     constexpr int MAX_ENEMIES = 3;
     Enemy enemies[MAX_ENEMIES];
     enemies[0] = createGoblin(2, 8);
@@ -51,7 +46,6 @@ int main()
 
     while (gameState == GameState::Running)
     {
-        // Render
         renderMap(currentRoom, player, enemies, MAX_ENEMIES);
         renderPlayer(player);
         renderStatusBar(player);
@@ -60,12 +54,10 @@ int main()
         std::cout << "\nMove: [W]North [S]South [A]West [D]East"
             << "  [R]est  [Q]uit\n> ";
 
-        // Input
         char input = ' ';
         std::cin >> input;
         std::cout << "\n";
 
-        // Calculate new position
         Position newPos = { player.getRow(), player.getCol() };
 
         switch (input)
@@ -88,7 +80,6 @@ int main()
             break;
         }
 
-        // Combat and movement
         bool combatOccurred = false;
         resolveCombat(player, enemies, MAX_ENEMIES, newPos, combatOccurred);
 
@@ -120,7 +111,6 @@ int main()
             gameState = GameState::PlayerDead;
     }
 
-    // End screen
     switch (gameState)
     {
     case GameState::PlayerDead:
