@@ -90,6 +90,9 @@ This project is proprietary and licensed for educational and non-commercial use 
 
 See the LICENSE file for full details. For commercial licensing, contact the copyright holder.
 
+## Most Recent Changes
+- **0.13**: The last what I did was refactoring the messy codebase slightly. Still self learning C++.
+
 ## Roadmap
 
 - **v0.3**: Basic rendering and input
@@ -99,8 +102,6 @@ See the LICENSE file for full details. For commercial licensing, contact the cop
 - **v2.0**: Advanced features and modding support
 - **vx.x**: More Features and Updates coming soon
 
+##Current Status
 
-
-
-
-#Just checking out my GitHub Commiting issue. Thanks.
+- Have mids going on so no major updates for now. Will be back to work on this project after my exams.
